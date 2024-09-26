@@ -1,0 +1,36 @@
+networks:
+  dev:
+
+services:
+  database:
+    image: postgres
+
+    expose:
+      - 5432
+
+    environment:
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=testdb
+
+    networks:
+      dev:
+
+  backend:
+    build:
+      context: ./backend
+
+    ports:
+      - 8000:8000
+
+    environment:
+      - DB_PATH=postgresql+asyncpg://postgres:admin@database/testdb
+      - DB_ECHO=0
+      - API_PATH=/api
+
+    depends_on:
+      - database
+
+    restart: always
+
+    networks:
+      dev:
